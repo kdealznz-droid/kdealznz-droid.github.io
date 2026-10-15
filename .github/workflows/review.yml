@@ -1,0 +1,29 @@
+# When a box is ticked or unticked in the "Deals for review" PR, record the unticked deals as rejected
+# on the review branch, so merging publishes only the ticked ones.
+name: Record review choices
+on:
+  pull_request:
+    types: [edited]
+permissions: { contents: write }
+concurrency: { group: review-choices, cancel-in-progress: false }
+jobs:
+  record:
+    if: github.event.pull_request.head.ref == 'deals/review' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env: { TZ: Pacific/Auckland }
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: deals/review }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Read the ticks
+        env: { BODY: "${{ github.event.pull_request.body }}" }
+        run: |
+          printf '%s' "$BODY" > "$RUNNER_TEMP/body.md"
+          python -m deals review --body-file "$RUNNER_TEMP/body.md"
+      - name: Save them on the review branch
+        run: |
+          git config user.name "KDealz bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/drafts.json
+          git diff --cached --quiet || { git commit -m "Record review choices"; git push; }

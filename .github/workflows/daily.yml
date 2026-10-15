@@ -1,0 +1,25 @@
+# Every morning (about 7am NZ): fetch the retailer feeds, update price history, draft deals, open a "Deals for review" PR.
+name: Daily deals
+on:
+  schedule: [{ cron: "0 18 * * *" }]
+  workflow_dispatch:
+permissions: { contents: write, pull-requests: write }
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env: { TZ: Pacific/Auckland }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Fetch feeds (Commission Factory data feed URL kept as a secret)
+        env: { FEED_URL: "${{ secrets.FEED_URL }}" }
+        run: if [ -n "$FEED_URL" ]; then curl -sSf "$FEED_URL" -o data/feed.csv; fi
+      - run: python -m deals run
+      - uses: peter-evans/create-pull-request@v6
+        with:
+          branch: deals/review
+          title: "Deals for review"
+          body-path: REVIEW.md
+          commit-message: "Daily deals for review"
+          author: "KDealz bot <41898282+github-actions[bot]@users.noreply.github.com>"

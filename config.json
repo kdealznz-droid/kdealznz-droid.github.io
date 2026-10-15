@@ -1,0 +1,14 @@
+{
+ "demo": true,
+ "feeds": [{"path": "data/demo_feed.csv", "mapping": {}}],
+ "_real_feed_example": {"path": "data/feed.csv", "mapping": {"id": "Id", "name": "Name", "brand": "Brand", "price": "PriceSale",
+   "url": "DeepLink", "image": "ImageUrl", "retailer": "MerchantName", "category": "Category",
+   "_categories_note": "Left side = the retailer's own category names (check each feed and add theirs); right side = KDealz category.",
+   "categories": {"Mobile Phones": "phones", "Smartphones": "phones",
+                  "Mobile Accessories": "mobile-gear", "Phone Accessories": "mobile-gear", "Chargers & Power Banks": "mobile-gear",
+                  "Wearables": "wearables", "Smart Watches": "wearables", "Fitness Trackers": "wearables",
+                  "Smart Home": "smart-home", "Home Automation": "smart-home",
+                  "Laptops": "laptops", "Notebooks": "laptops",
+                  "Monitors": "monitors", "Computer Monitors": "monitors",
+                  "Interactive Displays": "interactive", "Interactive Whiteboards": "interactive"}}}
+}
